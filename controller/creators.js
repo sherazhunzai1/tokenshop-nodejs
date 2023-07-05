@@ -1152,6 +1152,45 @@ const authentication = async (req, res, next) => {
     return next({ code: 400, message: "No Request Found" });
   }
 };
+const generateImage = async (req, res, next) => {
+  let htmlContent = req.body.content;
+
+  if (htmlContent) {
+    try {
+  const puppeteer = require('puppeteer');
+     async function convertDivToImage(htmlContent, outputPath) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  // Set the viewport size based on the dimensions of the div
+  await page.setViewport({
+    width: 800,
+    height: 600,
+  });
+  // Set the HTML content of the page to the provided div
+  await page.setContent(htmlContent);
+  // Capture a screenshot of the div
+  await page.screenshot({ path: outputPath });
+  await browser.close();
+}
+
+let imageName = Date.now() + ".jpg";
+const outputPath = `./public/images/nfts/${imageName}`;
+2:56
+convertDivToImage(htmlContent, outputPath)
+  .then(() => {
+    res.status(201).json({image:imageName});
+  })
+  .catch((error) => {
+    console.error('Error converting div to image:', error);
+  });
+      
+    } catch (err) {
+      return next({ code: 401, message: err });
+    }
+  } else {
+    return next({ code: 400, message: "No Request Found" });
+  }
+};
 
 module.exports = {
   userLogin: logIn,
@@ -1181,4 +1220,5 @@ module.exports = {
   makeOffer: makeOffer,
   offersMadeByUser: offersMadeByUser,
   offersReceivedByUser: offersReceivedByUser,
+  generateImage:generateImage,
 };
