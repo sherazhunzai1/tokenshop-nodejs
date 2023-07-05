@@ -1102,30 +1102,23 @@ const logIn = async (req, res, next) => {
   try {
     const [data] = await creators.checkWallet(wallet);
     if (data.length > 0) {
-      data.forEach((rowsData) => {
-        let data = {
-          creatorId: rowsData.creatorID,
-          username: rowsData.username,
-          firstName: rowsData.firstName,
-          lastName: rowsData.lastName,
-          walletAddress: rowsData.walletAddress,
-          image: rowsData.img,
-          cover: rowsData.cover,
-          bio: rowsData.bio,
-          email: rowsData.email,
-          portfolio: rowsData.portfolio,
-          instagram: rowsData.instagram,
-          twitter: rowsData.twitter,
-          facebook: rowsData.facebook,
-          createdAt: rowsData.createdAt,
-        };
-        return res.status(201).json(data);
-      });
+     
+        return res.status(201).json(data[0]);
+     
     } else {
-      return next({ code: 404, message: "No User Found" });
+      const [result] = await creators.singUp(wallet);
+      const [data] = await creators.checkWallet(wallet);
+    if (data.length > 0) {
+      
+         res.status(201).json(data[0]);
+      
     }
-  } catch (err) {
-    return next({ code: 401, message: err });
+    else{
+      console.log('error on signup');
+    }
+  }
+ } catch (err) {
+    return next({ code: 401, message: err.message });
   }
 };
 

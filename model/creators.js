@@ -69,7 +69,7 @@ walletAddress = '${walletAddress}'
 `);
   }
 
-  singUp({ walletAddress }) {
+  singUp(walletAddress) {
     return db.execute(`INSERT INTO creators SET  walletAddress = '${walletAddress}',username='${walletAddress}'
 `);
   }
