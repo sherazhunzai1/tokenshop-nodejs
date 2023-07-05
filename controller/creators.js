@@ -1175,13 +1175,12 @@ const generateImage = async (req, res, next) => {
 
 let imageName = Date.now() + ".jpg";
 const outputPath = `./public/images/nfts/${imageName}`;
-2:56
 convertDivToImage(htmlContent, outputPath)
   .then(() => {
     res.status(201).json({image:imageName});
   })
   .catch((error) => {
-    console.error('Error converting div to image:', error);
+    res.status(400).json({error:error.message});
   });
       
     } catch (err) {

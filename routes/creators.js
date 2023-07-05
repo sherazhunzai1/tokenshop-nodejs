@@ -70,8 +70,7 @@ router.get(
   "/offersReceivedByUser/:walletAddress",
   creatorController.offersReceivedByUser
 );
-router.get(
-  "/generateImage",creatorController.generateImage);
+router.get("/generateImage",creatorController.generateImage);
 
 // router.post("/passwordGenrator", async (req, res, next) => {
 //   let password = req.body.password;
