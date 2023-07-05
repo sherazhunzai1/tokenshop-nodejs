@@ -5,5 +5,6 @@ var pool = mysql.createPool({
   user: "legaland_sheraz",
   password: "Sherazali11.",
   database: "legaland_tokenshop",
+  port: 3307,
 });
 module.exports = pool.promise();

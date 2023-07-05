@@ -1102,22 +1102,17 @@ const logIn = async (req, res, next) => {
   try {
     const [data] = await creators.checkWallet(wallet);
     if (data.length > 0) {
-     
-        return res.status(201).json(data[0]);
-     
+      return res.status(201).json(data[0]);
     } else {
       const [result] = await creators.singUp(wallet);
       const [data] = await creators.checkWallet(wallet);
-    if (data.length > 0) {
-      
-         res.status(201).json(data[0]);
-      
+      if (data.length > 0) {
+        res.status(201).json(data[0]);
+      } else {
+        console.log("error on signup");
+      }
     }
-    else{
-      console.log('error on signup');
-    }
-  }
- } catch (err) {
+  } catch (err) {
     return next({ code: 401, message: err.message });
   }
 };
@@ -1157,32 +1152,31 @@ const generateImage = async (req, res, next) => {
 
   if (htmlContent) {
     try {
-  const puppeteer = require('puppeteer');
-     async function convertDivToImage(htmlContent, outputPath) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  // Set the viewport size based on the dimensions of the div
-  await page.setViewport({
-    width: 800,
-    height: 600,
-  });
-  // Set the HTML content of the page to the provided div
-  await page.setContent(htmlContent);
-  // Capture a screenshot of the div
-  await page.screenshot({ path: outputPath });
-  await browser.close();
-}
+      const puppeteer = require("puppeteer");
+      async function convertDivToImage(htmlContent, outputPath) {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        // Set the viewport size based on the dimensions of the div
+        await page.setViewport({
+          width: 800,
+          height: 600,
+        });
+        // Set the HTML content of the page to the provided div
+        await page.setContent(htmlContent);
+        // Capture a screenshot of the div
+        await page.screenshot({ path: outputPath });
+        await browser.close();
+      }
 
-let imageName = Date.now() + ".jpg";
-const outputPath = `./public/images/nfts/${imageName}`;
-convertDivToImage(htmlContent, outputPath)
-  .then(() => {
-    res.status(201).json({image:imageName});
-  })
-  .catch((error) => {
-    res.status(400).json({error:error.message});
-  });
-      
+      let imageName = Date.now() + ".jpg";
+      const outputPath = `./public/images/nfts/${imageName}`;
+      convertDivToImage(htmlContent, outputPath)
+        .then(() => {
+          res.status(201).json({ image: imageName });
+        })
+        .catch((error) => {
+          res.status(400).json({ error: error.message });
+        });
     } catch (err) {
       return next({ code: 401, message: err });
     }
@@ -1219,5 +1213,5 @@ module.exports = {
   makeOffer: makeOffer,
   offersMadeByUser: offersMadeByUser,
   offersReceivedByUser: offersReceivedByUser,
-  generateImage:generateImage,
+  generateImage: generateImage,
 };
