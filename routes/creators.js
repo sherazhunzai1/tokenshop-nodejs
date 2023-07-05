@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/checkEmail/:email", creatorController.checkEmail);
 router.get("/checkWallet/:wallet", creatorController.checkWallet);
 router.get("/checkUsername/:username", creatorController.checkUserName);
-router.post("/signUp",  creatorController.signUp);
+router.post("/signUp/:walletAddress",  creatorController.signUp);
 
 // category routes
 router.get("/getCategories", creatorController.getAllCategories);

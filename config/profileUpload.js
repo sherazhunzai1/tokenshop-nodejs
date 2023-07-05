@@ -1,6 +1,6 @@
 const util = require("util");
 const multer = require("multer");
-const path = require("node:path");
+const path = require("path");
 const baseUrl = require("./baseUrl");
 const maxSize = 1024 * 1024 * 1024;
 

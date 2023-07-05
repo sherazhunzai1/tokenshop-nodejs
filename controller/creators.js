@@ -1069,7 +1069,7 @@ const signUp = async (req, res, next) => {
    
  
      */
-  let payload = req.body;
+  let payload = req.params;
 
   const errors = validationResult(req);
 
