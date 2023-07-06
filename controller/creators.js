@@ -3,7 +3,7 @@ const Creators = require("../model/creators");
 const Nfts = require("../model/nfts");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-
+const Joi=require('joi');
 let creators = new Creators();
 let nfts = new Nfts();
 const offersReceivedByUser = async (req, res, next) => {
@@ -1097,8 +1097,16 @@ const signUp = async (req, res, next) => {
 };
 
 const logIn = async (req, res, next) => {
-  let wallet = req.params.wallet;
-
+  let wallet = req.body.wallet;
+  const reqBodySchema = Joi.object({
+    wallet: Joi.string().required()
+}).options({ abortEarly: false, allowUnknown: false });
+const { error } = reqBodySchema.validate({
+  wallet
+});
+if (error) {
+  res.status(401).json("missing payload");
+}
   try {
     const [data] = await creators.checkWallet(wallet);
     if (data.length > 0) {

@@ -37,7 +37,7 @@ router.post(
   creatorController.updateCoverPic
 );
 
-router.get("/login/:wallet", creatorController.userLogin);
+router.post("/login/:wallet", creatorController.userLogin);
 
 router.get("/allCreators", creatorController.allCreators);
 router.get("/singleCreator/:walletAddress", creatorController.singleCreator);
