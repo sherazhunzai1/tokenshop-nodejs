@@ -5,7 +5,7 @@ const validate = require("../helper/validate");
 const auth = require("../middleware/validation");
 const profileUpload = require("../config/profileUpload");
 const coverUpload = require("../config/coverUpload");
-
+const formdata = require('./../config/acceptFormData');
 const router = express.Router();
 
 // router.get("/checkSession", auth, creatorController.authentication);
@@ -37,7 +37,7 @@ router.post(
   creatorController.updateCoverPic
 );
 
-router.post("/login/:wallet", creatorController.userLogin);
+router.post("/login",formdata.none(), creatorController.userLogin);
 
 router.get("/allCreators", creatorController.allCreators);
 router.get("/singleCreator/:walletAddress", creatorController.singleCreator);

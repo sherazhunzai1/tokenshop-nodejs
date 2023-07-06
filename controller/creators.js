@@ -1105,7 +1105,7 @@ const { error } = reqBodySchema.validate({
   wallet
 });
 if (error) {
-  res.status(401).json("missing payload");
+  res.status(401).json("invalid wallet");
 }
   try {
     const [data] = await creators.checkWallet(wallet);
