@@ -1099,7 +1099,7 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
   let wallet = req.body.wallet;
   const reqBodySchema = Joi.object({
-    wallet: Joi.string().required()
+    wallet: Joi.string().required().pattern(/^0x[a-fA-F0-9]{40}$/)
 }).options({ abortEarly: false, allowUnknown: false });
 const { error } = reqBodySchema.validate({
   wallet
