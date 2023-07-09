@@ -5,7 +5,7 @@ const validate = require("../helper/validate");
 const auth = require("../middleware/validation");
 const profileUpload = require("../config/profileUpload");
 const coverUpload = require("../config/coverUpload");
-const formdata = require('./../config/acceptFormData');
+const formdata = require("./../config/acceptFormData");
 const router = express.Router();
 
 // router.get("/checkSession", auth, creatorController.authentication);
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/checkEmail/:email", creatorController.checkEmail);
 router.get("/checkWallet/:wallet", creatorController.checkWallet);
 router.get("/checkUsername/:username", creatorController.checkUserName);
-router.post("/signUp/:walletAddress",  creatorController.signUp);
+router.post("/signUp/:walletAddress", creatorController.signUp);
 
 // category routes
 router.get("/getCategories", creatorController.getAllCategories);
@@ -37,7 +37,7 @@ router.post(
   creatorController.updateCoverPic
 );
 
-router.post("/login",formdata.none(), creatorController.userLogin);
+router.post("/login", formdata.none(), creatorController.userLogin);
 
 router.get("/allCreators", creatorController.allCreators);
 router.get("/singleCreator/:walletAddress", creatorController.singleCreator);
@@ -70,7 +70,7 @@ router.get(
   "/offersReceivedByUser/:walletAddress",
   creatorController.offersReceivedByUser
 );
-router.post("/generateImage",formdata.none(),creatorController.generateImage);
+router.post("/generateImage", formdata.none(), creatorController.generateImage);
 
 // router.post("/passwordGenrator", async (req, res, next) => {
 //   let password = req.body.password;

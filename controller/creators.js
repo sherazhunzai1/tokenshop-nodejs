@@ -3,7 +3,7 @@ const Creators = require("../model/creators");
 const Nfts = require("../model/nfts");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const Joi=require('joi');
+const Joi = require("joi");
 let creators = new Creators();
 let nfts = new Nfts();
 const offersReceivedByUser = async (req, res, next) => {
@@ -438,7 +438,12 @@ const mintArt = async (req, res, next) => {
    * -  metadata,
    * -  transactionHash,
    * -  categoryId,
-   
+   * -  video: "",
+   * -  socialMediaImage,
+   * -  artistImage,
+   * -  titleImage,
+      
+     
  
      */
   let payload = req.body;
@@ -1099,14 +1104,16 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
   let wallet = req.body.wallet;
   const reqBodySchema = Joi.object({
-    wallet: Joi.string().required().pattern(/^0x[a-fA-F0-9]{40}$/)
-}).options({ abortEarly: false, allowUnknown: false });
-const { error } = reqBodySchema.validate({
-  wallet
-});
-if (error) {
-  res.status(401).json("invalid wallet");
-}
+    wallet: Joi.string()
+      .required()
+      .pattern(/^0x[a-fA-F0-9]{40}$/),
+  }).options({ abortEarly: false, allowUnknown: false });
+  const { error } = reqBodySchema.validate({
+    wallet,
+  });
+  if (error) {
+    res.status(401).json("invalid wallet");
+  }
   try {
     const [data] = await creators.checkWallet(wallet);
     if (data.length > 0) {
