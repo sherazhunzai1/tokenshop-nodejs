@@ -438,7 +438,7 @@ const mintArt = async (req, res, next) => {
    * -  metadata,
    * -  transactionHash,
    * -  categoryId,
-   * -  video: "",
+   * -  video,
    * -  socialMediaImage,
    * -  artistImage,
    * -  titleImage,

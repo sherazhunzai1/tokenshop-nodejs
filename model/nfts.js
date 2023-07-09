@@ -274,8 +274,13 @@ module.exports = class Nfts {
     metadata,
     transactionHash,
     categoryId,
+    video,
+    socialMediaImage,
+    artistImage,
+    titleImage,
+
   }) {
-    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${ownerWallet}',sale = '${metadata}', transactionHash = '${transactionHash}',categoryId = ${categoryId}
+    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${ownerWallet}',sale = '${metadata}', transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video},socialMediaImage='${socialMediaImage}',artistImage='${artistImage}',titleImage='${titleImage}'
 `);
   }
   putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
