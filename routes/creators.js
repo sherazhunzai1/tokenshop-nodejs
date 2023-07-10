@@ -48,7 +48,7 @@ router.post("/mintArt",upload, creatorController.mintArt);
 //list routes
 //list on Fiexed price
 
-router.post("/putOnFixedPrice", creatorController.putOnFixedSale);
+router.post("/putOnFixedPrice",formdata.none(), creatorController.putOnFixedSale);
 router.post("/updateSalePrice", creatorController.updateSalePrice);
 router.post("/cancelFixedSale", creatorController.cancelFixedPriceSale);
 router.post("/directTransfer", creatorController.directTransfer);
