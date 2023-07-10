@@ -259,7 +259,7 @@ const listOnAuction = async (req, res, next) => {
         return next({ code: 404, message: "no request found" });
       }
     } catch (error) {
-      return next({ code: 401, message: error });
+      return next({ code: 401, message: error.message });
     }
   } else {
     return next({ code: 400, message: "No Request Found" });

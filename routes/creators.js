@@ -54,7 +54,7 @@ router.post("/cancelFixedSale", creatorController.cancelFixedPriceSale);
 router.post("/directTransfer", creatorController.directTransfer);
 
 //listed on Auction
-router.post("/listOnAuction", creatorController.listOnAuction);
+router.post("/listOnAuction",formdata.none(), creatorController.listOnAuction);
 router.post("/addBidding", creatorController.addBidding);
 router.post("/auctionTransfer", creatorController.auctionTransfer);
 
