@@ -1,11 +1,9 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
 const creatorController = require("../controller/creators");
-const validate = require("../helper/validate");
-const auth = require("../middleware/validation");
 const profileUpload = require("../config/profileUpload");
 const coverUpload = require("../config/coverUpload");
 const formdata = require("./../config/acceptFormData");
+const upload=require("./../config/fileUpload");
 const router = express.Router();
 
 // router.get("/checkSession", auth, creatorController.authentication);
@@ -45,7 +43,7 @@ router.get("/inWallet/:walletAddress", creatorController.inWalletArts);
 router.post("/updateInfo", creatorController.updateCreatorInfo);
 
 //mint route
-router.post("/mintArt", creatorController.mintArt);
+router.post("/mintArt",upload, creatorController.mintArt);
 
 //list routes
 //list on Fiexed price

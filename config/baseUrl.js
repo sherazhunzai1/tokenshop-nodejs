@@ -1,3 +1,4 @@
+require("dotenv").config();
 
-const baseUrl = "https://nftbay.me/app.v1/";
+const baseUrl = process.env.DEVELOPMENT_BASE_URL;
 module.exports = baseUrl;

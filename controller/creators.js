@@ -450,7 +450,7 @@ const mintArt = async (req, res, next) => {
 
   if (payload) {
     try {
-      const result = await nfts.mintArt(payload);
+      const result = await nfts.mintArt(payload,req.video);
       if (result) {
         return res
           .status(201)
