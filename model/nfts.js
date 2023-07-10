@@ -283,7 +283,7 @@ module.exports = class Nfts {
 `);
   }
   putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
-    return db.execute(`INSERT INTO fixedprice SET orderId = ${orderId}, tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner = '${ownerWallet}', price = '${price}'
+    return db.execute(`INSERT INTO fixedprice SET orderId = '${orderId}', tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner = '${ownerWallet}', price = '${price}'
 `);
   }
   updateStatusOfNFT(tokenId) {
