@@ -717,7 +717,7 @@ const allCreators = async (req, res, next) => {
 };
 
 const getSingleArt = async (req, res, next) => {
-  let id = req.params.tokenId;
+  let id = req.params.nft_id;
   try {
     const [result] = await nfts.getSingleArt(id);
     if (result.length > 0) {

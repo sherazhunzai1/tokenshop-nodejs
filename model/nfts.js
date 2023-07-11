@@ -150,7 +150,7 @@ module.exports = class Nfts {
       ON
     (ow.walletAddress = n.ownerWallet)
     WHERE
-    n.tokenId = '${id}'
+    n.nft_id  = '${id}'
     
      `);
   }
