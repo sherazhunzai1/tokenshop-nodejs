@@ -503,14 +503,11 @@ const updateProfilePic = async (req, res, next) => {
     let image = req.image;
 
     if (walletAddress && image) {
-      try {
+      
         const [result] = await creators.uploadProfilePic(image, walletAddress);
         
           return res.status(201).json({ message: "Profile Picture Updated" });
         
-      } catch (error) {
-        return next({ code: error.status, message: error.message });
-      }
     } else {
       return next({ code: 400, message: "No Request Found" });
     }
