@@ -6,7 +6,7 @@ const formdata = require("./../config/acceptFormData");
 const upload=require("./../config/fileUpload");
 const router = express.Router();
 
-// router.get("/checkSession", auth, creatorController.authentication);
+router.get("/checkSession", creatorController.checkSession);
 
 router.get("/checkEmail/:email", creatorController.checkEmail);
 router.get("/checkWallet/:wallet", creatorController.checkWallet);

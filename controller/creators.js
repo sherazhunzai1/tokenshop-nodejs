@@ -497,31 +497,25 @@ const updateCoverPic = async (req, res, next) => {
 };
 const updateProfilePic = async (req, res, next) => {
   try {
-    if (req.file == undefined) {
-      return next({ code: 400, message: "Please upload a file!" });
-    }
+    
     let walletAddress = req.body.walletAddress;
 
-    let image = req.file.filename;
+    let image = req.image;
 
     if (walletAddress && image) {
       try {
-        const result = await creators.uploadProfilePic(image, walletAddress);
-        if (result) {
+        const [result] = await creators.uploadProfilePic(image, walletAddress);
+        
           return res.status(201).json({ message: "Profile Picture Updated" });
-        } else {
-          return next({ code: 404, message: "no data found" });
-        }
+        
       } catch (error) {
-        return next({ code: 401, message: error });
+        return next({ code: error.status, message: error.message });
       }
     } else {
       return next({ code: 400, message: "No Request Found" });
     }
-  } catch (err) {
-    return res.status(500).json({
-      message: `Could not upload the file: ${req.file.originalname}. ${err}`,
-    });
+  } catch (error) {
+    return next({ code: error.status, message: error.message });
   }
 };
 
@@ -1136,35 +1130,26 @@ const logIn = async (req, res, next) => {
   }
 };
 
-const authentication = async (req, res, next) => {
-  let email = req.data.data1.email;
+const checkSession = async (req, res, next) => {
+  const {wallet} = req.params;
 
-  if (email) {
+  if (!wallet) {
+  
+    return next({ code: 400, message: "No Request Found" });
+  }
     try {
       // console.log(password);
-      const [data] = await user.logIn(email);
+      const [data] = await creators.fetchSingle(wallet);
       if (data.length > 0) {
-        data.forEach((rowsData) => {
-          let data1 = {
-            id: rowsData.id,
-            fullName: rowsData.full_name,
-            email: rowsData.email,
-            phone: rowsData.phone,
-            bussiness_name: rowsData.bussiness_name,
-            address: rowsData.address,
-          };
-
-          return res.status(201).json({ userInfo: data1 });
-        });
+       
+        return res.status(200).json({ userInfo: data[0] });
       } else {
-        return next({ code: 404, message: "Invalid Email or Password" });
+        return next({ code: 404, message: "user not found" });
       }
     } catch (err) {
       return next({ code: 401, message: err });
     }
-  } else {
-    return next({ code: 400, message: "No Request Found" });
-  }
+ 
 };
 const generateImage = async (req, res, next) => {
   let htmlContent = req.body.content;
@@ -1233,4 +1218,5 @@ module.exports = {
   offersMadeByUser: offersMadeByUser,
   offersReceivedByUser: offersReceivedByUser,
   generateImage: generateImage,
+  checkSession:checkSession
 };
