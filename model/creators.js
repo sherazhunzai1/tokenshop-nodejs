@@ -17,6 +17,7 @@ module.exports = class Creators {
     WHERE walletAddress = '${wallet}'
      `);
   }
+
   checkUserName(username) {
     return db.execute(`SELECT * FROM  creators
     WHERE
@@ -58,12 +59,9 @@ module.exports = class Creators {
     firstName,
     lastName,
     email,
-    bio,
-    portfolio,
-    twitter,
-    instagram,
+    username
   }) {
-    return db.execute(`UPDATE creators SET firstName = '${firstName}', lastName = '${lastName}' , email = '${email}', bio = '${bio}', portfolio = '${portfolio}', twitter = '${twitter}', instagram = '${instagram}'
+    return db.execute(`UPDATE creators SET firstName = '${firstName}', lastName = '${lastName}' , email = '${email}',username='${username}' 
 WHERE
 walletAddress = '${walletAddress}'
 `);

@@ -619,26 +619,8 @@ const singleCreator = async (req, res, next) => {
   try {
     const [result] = await creators.fetchSingle(wallet);
     if (result.length > 0) {
-      result.forEach((rowsData) => {
-        let data = {
-          creatorId: rowsData.creatorID,
-          username: rowsData.username,
-          firstName: rowsData.firstName,
-          lastName: rowsData.lastName,
-          walletAddress: rowsData.walletAddress,
-          image: rowsData.img,
-          cover: rowsData.cover,
-          bio: rowsData.bio,
-          email: rowsData.email,
-          portfolio: rowsData.portfolio,
-          instagram: rowsData.instagram,
-          twitter: rowsData.twitter,
-          facebook: rowsData.facebook,
-          createdAt: rowsData.createdAt,
-        };
-
-        return res.status(201).json(data);
-      });
+    
+      return res.status(201).json(result);
     } else {
       return next({ code: 404, message: "no data found" });
     }
