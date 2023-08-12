@@ -517,11 +517,14 @@ const updateProfilePic = async (req, res, next) => {
 };
 
 const inWalletArts = async (req, res, next) => {
-  let wallet = req.params.walletAddress;
+  let {walletAddress} = req.params;
+  if(!walletAddress){
+    return next({ code: 400, message: "No Wallet Address" });
+  }
   try {
     const createdArts = [];
     const collectedArts = [];
-    const [result] = await nfts.createdArts(wallet);
+    const [result] = await nfts.createdArts(walletAddress);
     result.forEach((rowsData) => {
       let data = {
         id: rowsData.nft_id,
@@ -690,11 +693,15 @@ const allCreators = async (req, res, next) => {
 };
 
 const getSingleArt = async (req, res, next) => {
-  let id = req.params.nft_id;
+  let id = req.params.tokenId;
   try {
     const [result] = await nfts.getSingleArt(id);
     if (result.length > 0) {
       result.forEach((rowsData) => {
+        var video=null;
+        if(rowsData.nftType === 'public'){
+          video=rowsData.video;
+        }
         let data = {
           id: rowsData.nft_id,
           tokenId: rowsData.tokenId,
@@ -704,7 +711,7 @@ const getSingleArt = async (req, res, next) => {
           socialMediaImage:rowsData.socialMediaImage,
           artistImage: rowsData.artistImage,
           titleImage: rowsData.titleImage,
-          video: rowsData.video,
+          video: video,
           sale: rowsData.sale,
           isAuction: rowsData.auction,
           auctionId: rowsData.auctionId,
@@ -950,12 +957,18 @@ const getAllNftsData = async (req, res, next) => {
 
     if (result.length > 0) {
       result.forEach((rowsData) => {
+        var video=null;
+        if(rowsData.nftType === 'public'){
+          video=rowsData.video;
+        }
+
         let data = {
           id: rowsData.nft_id,
           tokenId: rowsData.tokenId,
           title: rowsData.title,
           description: rowsData.description,
           image: rowsData.image,
+          video:video,
           sale: rowsData.sale,
           isAuction: rowsData.auction,
           auctionId: rowsData.auctionId,
