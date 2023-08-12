@@ -450,7 +450,7 @@ const mintArt = async (req, res, next) => {
 
   if (payload) {
     try {
-      const result = await nfts.mintArt(payload,req.video);
+      const result = await nfts.mintArt(payload, req.video);
       if (result) {
         return res
           .status(201)
@@ -497,17 +497,14 @@ const updateCoverPic = async (req, res, next) => {
 };
 const updateProfilePic = async (req, res, next) => {
   try {
-    
     let walletAddress = req.body.walletAddress;
 
     let image = req.image;
 
     if (walletAddress && image) {
-      
-        const [result] = await creators.uploadProfilePic(image, walletAddress);
-        
-          return res.status(201).json({ message: "Profile Picture Updated" });
-        
+      const [result] = await creators.uploadProfilePic(image, walletAddress);
+
+      return res.status(201).json({ message: "Profile Picture Updated" });
     } else {
       return next({ code: 400, message: "No Request Found" });
     }
@@ -622,8 +619,7 @@ const singleCreator = async (req, res, next) => {
   try {
     const [result] = await creators.fetchSingle(wallet);
     if (result.length > 0) {
-    
-      return res.status(201).json(result);
+      return res.status(201).json(result[0]);
     } else {
       return next({ code: 404, message: "no data found" });
     }
@@ -708,7 +704,7 @@ const getSingleArt = async (req, res, next) => {
           title: rowsData.title,
           description: rowsData.description,
           image: rowsData.image,
-          socialMediaImage:rowsData.socialMediaImage,
+          socialMediaImage: rowsData.socialMediaImage,
           artistImage: rowsData.artistImage,
           titleImage: rowsData.titleImage,
           video: video,
@@ -1123,25 +1119,22 @@ const logIn = async (req, res, next) => {
 };
 
 const checkSession = async (req, res, next) => {
-  const {wallet} = req.params;
+  const { wallet } = req.params;
 
   if (!wallet) {
-  
     return next({ code: 400, message: "No Request Found" });
   }
-    try {
-      // console.log(password);
-      const [data] = await creators.fetchSingle(wallet);
-      if (data.length > 0) {
-       
-        return res.status(200).json({ userInfo: data[0] });
-      } else {
-        return next({ code: 404, message: "user not found" });
-      }
-    } catch (err) {
-      return next({ code: 401, message: err });
+  try {
+    // console.log(password);
+    const [data] = await creators.fetchSingle(wallet);
+    if (data.length > 0) {
+      return res.status(200).json({ userInfo: data[0] });
+    } else {
+      return next({ code: 404, message: "user not found" });
     }
- 
+  } catch (err) {
+    return next({ code: 401, message: err });
+  }
 };
 const generateImage = async (req, res, next) => {
   let htmlContent = req.body.content;
@@ -1210,5 +1203,5 @@ module.exports = {
   offersMadeByUser: offersMadeByUser,
   offersReceivedByUser: offersReceivedByUser,
   generateImage: generateImage,
-  checkSession:checkSession
+  checkSession: checkSession,
 };
