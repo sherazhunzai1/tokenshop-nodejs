@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 const Joi = require("joi");
 let creators = new Creators();
 let nfts = new Nfts();
+const nodeHtmlToImage = require('node-html-to-image');
+const fs = require('fs');
 const offersReceivedByUser = async (req, res, next) => {
   let walletAddress = req.params.walletAddress;
   try {
@@ -691,6 +693,7 @@ const allCreators = async (req, res, next) => {
 
 const getSingleArt = async (req, res, next) => {
   let id = req.params.tokenId;
+  console.log(id);
   try {
     const [result] = await nfts.getSingleArt(id);
     if (result.length > 0) {
@@ -1143,32 +1146,17 @@ const generateImage = async (req, res, next) => {
 
   if (htmlContent) {
     try {
-      const puppeteer = require("puppeteer");
-      async function convertDivToImage(htmlContent, outputPath) {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        // Set the viewport size based on the dimensions of the div
-        await page.setViewport({
-          width: 800,
-          height: 600,
-        });
-        // Set the HTML content of the page to the provided div
-        await page.setContent(htmlContent);
-        // Capture a screenshot of the div
-        await page.screenshot({ path: outputPath });
-        await browser.close();
-      }
-
       let imageName = Date.now() + ".jpg";
-      const outputPath = `${process.env.PRODUCTION_BASE_URL+process.env.NFT_IMAGES_PATH}/${imageName}`;
-      console.log(outputPath,'imeages');
-      convertDivToImage(htmlContent, outputPath)
-        .then(() => {
-          res.status(201).json({ image: imageName });
-        })
-        .catch((error) => {
-          res.status(400).json({ error: error.message });
-        });
+      nodeHtmlToImage({
+        output: `${process.env.PRODUCTION_BASE_URL+process.env.NFT_IMAGES_PATH}/${imageName}`,
+        html: htmlContent,
+    })
+    .then(() => {
+      res.status(201).json({ image: imageName });
+    })
+    .catch((error) => {
+      res.status(400).json({ error: error.message });
+    });
     } catch (err) {
       return next({ code: 401, message: err.message });
     }
