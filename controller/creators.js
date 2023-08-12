@@ -1137,6 +1137,7 @@ const checkSession = async (req, res, next) => {
   }
 };
 const generateImage = async (req, res, next) => {
+  require("dotenv").config();
   let htmlContent = req.body.content;
 
   if (htmlContent) {
@@ -1158,7 +1159,7 @@ const generateImage = async (req, res, next) => {
       }
 
       let imageName = Date.now() + ".jpg";
-      const outputPath = `./public/images/nfts/${imageName}`;
+      const outputPath = `${process.env.PRODUCTION_BASE_URL+process.env.NFT_VIDEO_PATH}/${imageName}`;
       convertDivToImage(htmlContent, outputPath)
         .then(() => {
           res.status(201).json({ image: imageName });
