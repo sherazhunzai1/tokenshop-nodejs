@@ -1,3 +1,4 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const Creators = require("../model/creators");
 const Nfts = require("../model/nfts");
@@ -1137,7 +1138,7 @@ const checkSession = async (req, res, next) => {
   }
 };
 const generateImage = async (req, res, next) => {
-  require("dotenv").config();
+
   let htmlContent = req.body.content;
 
   if (htmlContent) {
@@ -1159,7 +1160,8 @@ const generateImage = async (req, res, next) => {
       }
 
       let imageName = Date.now() + ".jpg";
-      const outputPath = `${process.env.PRODUCTION_BASE_URL+process.env.NFT_VIDEO_PATH}/${imageName}`;
+      const outputPath = `${process.env.PRODUCTION_BASE_URL+process.env.NFT_IMAGES_PATH}/${imageName}`;
+      console.log(outputPath,'imeages');
       convertDivToImage(htmlContent, outputPath)
         .then(() => {
           res.status(201).json({ image: imageName });
@@ -1168,7 +1170,7 @@ const generateImage = async (req, res, next) => {
           res.status(400).json({ error: error.message });
         });
     } catch (err) {
-      return next({ code: 401, message: err });
+      return next({ code: 401, message: err.message });
     }
   } else {
     return next({ code: 400, message: "No Request Found" });
