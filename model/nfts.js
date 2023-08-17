@@ -352,7 +352,11 @@ module.exports = class Nfts {
     ownerWallet,
     reservePrice,
   }) {
-    return db.execute(`INSERT INTO auctions SET auctionId = ${auctionId}, tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner_address = '${ownerWallet}', reservePrice = '${reservePrice}'
+    const currentDate = new Date();
+const unixTimestamp = currentDate.getTime();
+const endTime=(24*60*60);
+const unixTimestampInSeconds = Math.floor((unixTimestamp / 1000)+endTime);
+    return db.execute(`INSERT INTO auctions SET auctionId = ${auctionId}, tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner_address = '${ownerWallet}', reservePrice = '${reservePrice}',endTimeInSeconds=${unixTimestampInSeconds}
 `);
   }
   updateStatusOfNFTtoAuction(tokenId) {
