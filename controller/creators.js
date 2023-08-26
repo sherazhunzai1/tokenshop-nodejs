@@ -583,7 +583,7 @@ const inWalletArts = async (req, res, next) => {
       collectedArts: collectedArts,
     });
   } catch (error) {
-    return next({ code: 401, message: error });
+    return next({ code: 401, message: error.message });
   }
 };
 
