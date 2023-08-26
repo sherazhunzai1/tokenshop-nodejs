@@ -551,7 +551,7 @@ const inWalletArts = async (req, res, next) => {
       };
       createdArts.push(data);
     });
-    const [result1] = await nfts.collectedArts(wallet);
+    const [result1] = await nfts.collectedArts(walletAddress);
     result1.forEach((rowsData) => {
       let data1 = {
         id: rowsData.nft_id,
