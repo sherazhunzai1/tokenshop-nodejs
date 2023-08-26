@@ -295,10 +295,10 @@ const directTransfer = async (req, res, next) => {
         payload.tokenId,
         payload.orderId
       );
-      const createNotification = await nfts.createNotificationDirectTransfer(
-        payload.transferTo,
-        payload.tokenId
-      );
+      // const createNotification = await nfts.createNotificationDirectTransfer(
+      //   payload.transferTo,
+      //   payload.tokenId
+      // );
       const updateOwner = await nfts.updateOwnerAfterDirectTransfer(
         payload.tokenId,
         payload.transferTo
@@ -308,7 +308,7 @@ const directTransfer = async (req, res, next) => {
         result &&
         resetListings &&
         updateFixedTable &&
-        createNotification &&
+        // createNotification &&
         updateOwner
       ) {
         return res.status(201).json({
