@@ -1,10 +1,10 @@
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
-const Creators = require("../model/creators");
-const Nfts = require("../model/nfts");
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
-const Joi = require("joi");
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
+const Creators = require('../model/creators');
+const Nfts = require('../model/nfts');
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
+const Joi = require('joi');
 let creators = new Creators();
 let nfts = new Nfts();
 const nodeHtmlToImage = require('node-html-to-image');
@@ -37,7 +37,7 @@ const offersReceivedByUser = async (req, res, next) => {
         offersReceived: offersReceived,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -72,7 +72,7 @@ const offersMadeByUser = async (req, res, next) => {
         offersMade: offersMade,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -96,7 +96,7 @@ const makeOffer = async (req, res, next) => {
  
      */
   let payload = req.body;
-  let type = "offerReceived";
+  let type = 'offerReceived';
   if (payload) {
     try {
       const result = await nfts.makeOffer(payload);
@@ -109,18 +109,18 @@ const makeOffer = async (req, res, next) => {
 
       if (result && createNotification) {
         return res.status(201).json({
-          message: "Offer Made successfully",
+          message: 'Offer Made successfully',
           tokenId: payload.tokenId,
           offerId: payload.offerId,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 const auctionTransfer = async (req, res, next) => {
@@ -167,17 +167,17 @@ const auctionTransfer = async (req, res, next) => {
         updateOwner
       ) {
         return res.status(201).json({
-          message: "NFT Transferred successfully",
+          message: 'NFT Transferred successfully',
           tokenId: payload.tokenId,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 
@@ -214,17 +214,17 @@ const addBidding = async (req, res, next) => {
 
       if (result && updateAuctionTable) {
         return res.status(201).json({
-          message: "Bidded Successfylly",
+          message: 'Bidded Successfylly',
           tokenId: payload.tokenId,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 
@@ -255,17 +255,17 @@ const listOnAuction = async (req, res, next) => {
       );
       if (result && updateStatusOfNFTs) {
         return res.status(201).json({
-          message: "Listed On Auction Successfylly",
+          message: 'Listed On Auction Successfylly',
           tokenId: payload.tokenId,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error.message });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 const directTransfer = async (req, res, next) => {
@@ -312,17 +312,17 @@ const directTransfer = async (req, res, next) => {
         updateOwner
       ) {
         return res.status(201).json({
-          message: "NFT Transferred successfully",
+          message: 'NFT Transferred successfully',
           tokenId: payload.tokenId,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 const cancelFixedPriceSale = async (req, res, next) => {
@@ -345,18 +345,18 @@ const cancelFixedPriceSale = async (req, res, next) => {
       const resetListings = await nfts.resetNFTStatus(payload.tokenId);
       if (result && resetListings) {
         return res.status(201).json({
-          message: "Successfully Cancelled Fixed Price Sale",
+          message: 'Successfully Cancelled Fixed Price Sale',
           tokenId: payload.tokenId,
           price: payload.price,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 const updateSalePrice = async (req, res, next) => {
@@ -378,18 +378,18 @@ const updateSalePrice = async (req, res, next) => {
       const result = await nfts.updateSalePrice(payload);
       if (result) {
         return res.status(201).json({
-          message: "Sale Price Updated",
+          message: 'Sale Price Updated',
           tokenId: payload.tokenId,
           price: payload.price,
         });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 const putOnFixedSale = async (req, res, next) => {
@@ -415,15 +415,15 @@ const putOnFixedSale = async (req, res, next) => {
       if (result && updateStatusOfNFTs) {
         return res
           .status(201)
-          .json({ message: "Success", tokenId: payload.tokenId });
+          .json({ message: 'Success', tokenId: payload.tokenId });
       } else {
-        return next({ code: 404, message: "no request found" });
+        return next({ code: 404, message: 'no request found' });
       }
     } catch (error) {
       return next({ code: 401, message: error.message });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 
@@ -432,19 +432,18 @@ const mintArt = async (req, res, next) => {
      * @dev the payload will contain following properties:
     
     
-   * -  tokenId,
-   * -  title,
-   * -  description,
-   * -  image,
-   * -  creatorWallet,
-   * -  ownerWallet,
-   * -  metadata,
-   * -  transactionHash,
-   * -  categoryId,
-   * -  video,
-   * -  socialMediaImage,
-   * -  artistImage,
-   * -  titleImage,
+     * - video,
+     * - image,
+     * - name,
+     * - categoryId,
+     * - description,
+     * - facebook,
+     *  -instagram,
+     * - twitter,
+     * - price ,
+     * - creatorWallet,
+     * - public,
+     * - listingType: { fixed: false, auction: false },
       
      
  
@@ -454,25 +453,24 @@ const mintArt = async (req, res, next) => {
   if (payload) {
     try {
       const result = await nfts.mintArt(payload, req.video);
-      if (result) {
+      if (result)
         return res
           .status(201)
-          .json({ message: " Minted Successfully", tokenId: payload.tokenId });
-      } else {
-        return next({ code: 404, message: "no request found" });
-      }
+          .json({ message: ' Minted Successfully', tokenId: payload.tokenId });
+
+      return next({ code: 404, message: 'no request found' });
     } catch (error) {
-      return next({ code: 401, message: error });
+      return next({ code: 401, message: error.message });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 
 const updateCoverPic = async (req, res, next) => {
   try {
     if (req.file == undefined) {
-      return next({ code: 400, message: "Please upload a file!" });
+      return next({ code: 400, message: 'Please upload a file!' });
     }
     let walletAddress = req.body.walletAddress;
 
@@ -482,15 +480,15 @@ const updateCoverPic = async (req, res, next) => {
       try {
         const result = await creators.uploadCoverPic(image, walletAddress);
         if (result) {
-          return res.status(201).json({ message: "Cover Picture Updated" });
+          return res.status(201).json({ message: 'Cover Picture Updated' });
         } else {
-          return next({ code: 404, message: "no data found" });
+          return next({ code: 404, message: 'no data found' });
         }
       } catch (error) {
         return next({ code: 401, message: error });
       }
     } else {
-      return next({ code: 400, message: "No Request Found" });
+      return next({ code: 400, message: 'No Request Found' });
     }
   } catch (err) {
     return res.status(500).json({
@@ -507,9 +505,9 @@ const updateProfilePic = async (req, res, next) => {
     if (walletAddress && image) {
       const [result] = await creators.uploadProfilePic(image, walletAddress);
 
-      return res.status(201).json({ message: "Profile Picture Updated" });
+      return res.status(201).json({ message: 'Profile Picture Updated' });
     } else {
-      return next({ code: 400, message: "No Request Found" });
+      return next({ code: 400, message: 'No Request Found' });
     }
   } catch (error) {
     return next({ code: error.status, message: error.message });
@@ -517,9 +515,9 @@ const updateProfilePic = async (req, res, next) => {
 };
 
 const inWalletArts = async (req, res, next) => {
-  let {walletAddress} = req.params;
-  if(!walletAddress){
-    return next({ code: 400, message: "No Wallet Address" });
+  let { walletAddress } = req.params;
+  if (!walletAddress) {
+    return next({ code: 400, message: 'No Wallet Address' });
   }
   try {
     const createdArts = [];
@@ -603,14 +601,14 @@ const updateCreatorInfo = async (req, res, next) => {
   let payload = req.body;
   const { walletAddress } = payload;
 
-  if (!walletAddress) return next({ code: 400, message: "No Request Found" });
+  if (!walletAddress) return next({ code: 400, message: 'No Request Found' });
 
   try {
     const result = await creators.updateInfo(payload);
     if (result) {
-      return res.status(201).json({ message: "Info Updated Successfully" });
+      return res.status(201).json({ message: 'Info Updated Successfully' });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -624,7 +622,7 @@ const singleCreator = async (req, res, next) => {
     if (result.length > 0) {
       return res.status(201).json(result[0]);
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -637,7 +635,7 @@ const allCreators = async (req, res, next) => {
   let start = 0;
   let end = pageCount;
   if (pageNo) {
-    if (pageNo === "1") {
+    if (pageNo === '1') {
       start = 0;
       end = pageCount;
     } else {
@@ -684,7 +682,7 @@ const allCreators = async (req, res, next) => {
         creatorsInfo: creatorsInfo,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -698,9 +696,9 @@ const getSingleArt = async (req, res, next) => {
     const [result] = await nfts.getSingleArt(id);
     if (result.length > 0) {
       result.forEach((rowsData) => {
-        var video=null;
-        if(rowsData.nftType === 'public'){
-          video=rowsData.video;
+        var video = null;
+        if (rowsData.nftType === 'public') {
+          video = rowsData.video;
         }
         let data = {
           id: rowsData.nft_id,
@@ -741,7 +739,7 @@ const getSingleArt = async (req, res, next) => {
         return res.status(201).json(data);
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -755,7 +753,7 @@ const fetchAllNftsWithCatId = async (req, res, next) => {
   let start = 0;
   let end = pageCount;
   if (pageNo) {
-    if (pageNo === "1") {
+    if (pageNo === '1') {
       start = 0;
       end = pageCount;
     } else {
@@ -818,7 +816,7 @@ const fetchAllNftsWithCatId = async (req, res, next) => {
         nftData: nftData,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -843,7 +841,7 @@ const getAllCategories = async (req, res, next) => {
 
       return res.status(201).json({ categoriesData: categories });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -856,7 +854,7 @@ const fetchAllNfts = async (req, res, next) => {
   let start = 0;
   let end = pageCount;
   if (pageNo) {
-    if (pageNo === "1") {
+    if (pageNo === '1') {
       start = 0;
       end = pageCount;
     } else {
@@ -917,7 +915,7 @@ const fetchAllNfts = async (req, res, next) => {
         nftData: nftData,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -931,7 +929,7 @@ const getAllNftsData = async (req, res, next) => {
   let start = 0;
   let end = pageCount;
   if (pageNo) {
-    if (pageNo === "1") {
+    if (pageNo === '1') {
       start = 0;
       end = pageCount;
     } else {
@@ -957,9 +955,9 @@ const getAllNftsData = async (req, res, next) => {
 
     if (result.length > 0) {
       result.forEach((rowsData) => {
-        var video=null;
-        if(rowsData.nftType === 'public'){
-          video=rowsData.video;
+        var video = null;
+        if (rowsData.nftType === 'public') {
+          video = rowsData.video;
         }
 
         let data = {
@@ -968,7 +966,7 @@ const getAllNftsData = async (req, res, next) => {
           title: rowsData.title,
           description: rowsData.description,
           image: rowsData.image,
-          video:video,
+          video: video,
           sale: rowsData.sale,
           isAuction: rowsData.auction,
           auctionId: rowsData.auctionId,
@@ -1004,7 +1002,7 @@ const getAllNftsData = async (req, res, next) => {
         nftData: nftData,
       });
     } else {
-      return next({ code: 404, message: "no data found" });
+      return next({ code: 404, message: 'no data found' });
     }
   } catch (error) {
     return next({ code: 401, message: error });
@@ -1079,15 +1077,15 @@ const signUp = async (req, res, next) => {
     try {
       const result = await creators.singUp(payload);
       if (result) {
-        return res.status(201).json({ message: " Registered Successfully" });
+        return res.status(201).json({ message: ' Registered Successfully' });
       } else {
-        return next({ code: 404, message: "no data found" });
+        return next({ code: 404, message: 'no data found' });
       }
     } catch (error) {
       return next({ code: 401, message: error });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 
@@ -1102,7 +1100,7 @@ const logIn = async (req, res, next) => {
     wallet,
   });
   if (error) {
-    res.status(401).json("invalid wallet");
+    res.status(401).json('invalid wallet');
   }
   try {
     const [data] = await creators.checkWallet(wallet);
@@ -1114,7 +1112,7 @@ const logIn = async (req, res, next) => {
       if (data.length > 0) {
         res.status(201).json(data[0]);
       } else {
-        console.log("error on signup");
+        console.log('error on signup');
       }
     }
   } catch (err) {
@@ -1126,7 +1124,7 @@ const checkSession = async (req, res, next) => {
   const { wallet } = req.params;
 
   if (!wallet) {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
   try {
     // console.log(password);
@@ -1134,34 +1132,35 @@ const checkSession = async (req, res, next) => {
     if (data.length > 0) {
       return res.status(200).json({ userInfo: data[0] });
     } else {
-      return next({ code: 404, message: "user not found" });
+      return next({ code: 404, message: 'user not found' });
     }
   } catch (err) {
     return next({ code: 401, message: err });
   }
 };
 const generateImage = async (req, res, next) => {
-
   let htmlContent = req.body.content;
 
   if (htmlContent) {
     try {
-      let imageName = Date.now() + ".jpg";
+      let imageName = Date.now() + '.jpg';
       nodeHtmlToImage({
-        output: `${process.env.PRODUCTION_BASE_URL+process.env.NFT_IMAGES_PATH}/${imageName}`,
+        output: `${
+          process.env.PRODUCTION_BASE_URL + process.env.NFT_IMAGES_PATH
+        }/${imageName}`,
         html: htmlContent,
-    })
-    .then(() => {
-      res.status(201).json({ image: imageName });
-    })
-    .catch((error) => {
-      res.status(400).json({ error: error.message });
-    });
+      })
+        .then(() => {
+          res.status(201).json({ image: imageName });
+        })
+        .catch((error) => {
+          res.status(400).json({ error: error.message });
+        });
     } catch (err) {
       return next({ code: 401, message: err.message });
     }
   } else {
-    return next({ code: 400, message: "No Request Found" });
+    return next({ code: 400, message: 'No Request Found' });
   }
 };
 

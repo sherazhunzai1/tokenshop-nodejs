@@ -274,14 +274,22 @@ module.exports = class Nfts {
       metadata,
       transactionHash,
       categoryId,
-      socialMediaImage,
-      artistImage,
-      titleImage,
       nftType,
+      visibility,
+      listingType,
     },
     video
   ) {
-    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${creatorWallet}',sale = 1, transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialMediaImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType='${nftType}'
+    const fixedprice = listingType.fixed ? 1 : 0;
+    const auction = listingType.auction ? 1 : 0;
+
+    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}',metadata = '${metadata}', creatorWallet = '${creatorWallet}', ownerWallet = '${creatorWallet}', transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',nftType='${nftType}', visibility = ${visibility},
+    fixedprice = ${fixedprice},
+    auction = ${auction},
+      sale = CASE
+                WHEN ${fixedprice} = 1 OR ${auction} = 1 THEN 1
+                ELSE 0
+             END
 `);
   }
   putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
