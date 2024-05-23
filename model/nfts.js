@@ -1,4 +1,4 @@
-const db = require("../config/database");
+const db = require('../config/database');
 
 module.exports = class Nfts {
   constructor() {}
@@ -190,8 +190,8 @@ module.exports = class Nfts {
     // if (categoryId) {
     //   catFilter = `WHERE c.cat_id = ${categoryId}`;
     // }
-    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : "";
-    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : "";
+    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : '';
+    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : '';
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
     LEFT JOIN categories c
@@ -230,8 +230,8 @@ module.exports = class Nfts {
     // if (categoryId) {
     //   catFilter = `WHERE c.cat_id = ${categoryId}`;
     // }
-    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : "";
-    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : "";
+    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : '';
+    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : '';
 
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
@@ -264,26 +264,27 @@ module.exports = class Nfts {
       ORDER BY n.created_at DESC
      `);
   }
-  mintArt({
-    tokenId,
-    title,
-    description,
-    image,
-    creatorWallet,
-    ownerWallet,
-    metadata,
-    transactionHash,
-    categoryId,
-    socialMediaImage,
-    artistImage,
-    titleImage,
-    nftType
-
-  },video) {
-    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${ownerWallet}',sale = '${metadata}', transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialMediaImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType='${nftType}'
+  mintArt(
+    {
+      tokenId,
+      title,
+      description,
+      image,
+      creatorWallet,
+      metadata,
+      transactionHash,
+      categoryId,
+      socialMediaImage,
+      artistImage,
+      titleImage,
+      nftType,
+    },
+    video
+  ) {
+    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${creatorWallet}',sale = 1, transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialMediaImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType='${nftType}'
 `);
   }
-  putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) { 
+  putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
     return db.execute(`INSERT INTO fixedprice SET orderId = '${orderId}', tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner = '${ownerWallet}', price = '${price}'
 `);
   }
@@ -353,9 +354,9 @@ module.exports = class Nfts {
     reservePrice,
   }) {
     const currentDate = new Date();
-const unixTimestamp = currentDate.getTime();
-const endTime=(24*60*60);
-const unixTimestampInSeconds = Math.floor((unixTimestamp / 1000)+endTime);
+    const unixTimestamp = currentDate.getTime();
+    const endTime = 24 * 60 * 60;
+    const unixTimestampInSeconds = Math.floor(unixTimestamp / 1000 + endTime);
     return db.execute(`INSERT INTO auctions SET auctionId = ${auctionId}, tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner_address = '${ownerWallet}', reservePrice = '${reservePrice}',endTimeInSeconds=${unixTimestampInSeconds}
 `);
   }
