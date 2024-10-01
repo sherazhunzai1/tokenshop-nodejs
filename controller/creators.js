@@ -7,8 +7,8 @@ const bcrypt = require("bcrypt");
 const Joi = require("joi");
 let creators = new Creators();
 let nfts = new Nfts();
-const nodeHtmlToImage = require('node-html-to-image');
-const fs = require('fs');
+const nodeHtmlToImage = require("node-html-to-image");
+const fs = require("fs");
 const offersReceivedByUser = async (req, res, next) => {
   let walletAddress = req.params.walletAddress;
   try {
@@ -453,7 +453,7 @@ const mintArt = async (req, res, next) => {
 
   if (payload) {
     try {
-      const result = await nfts.mintArt(payload, req.video);
+      const result = await nfts.mintArt(payload);
       if (result) {
         return res
           .status(201)
@@ -462,7 +462,7 @@ const mintArt = async (req, res, next) => {
         return next({ code: 404, message: "no request found" });
       }
     } catch (error) {
-      return next({ code: 401, message: error });
+      return next({ code: 401, message: error.message });
     }
   } else {
     return next({ code: 400, message: "No Request Found" });
@@ -517,16 +517,34 @@ const updateProfilePic = async (req, res, next) => {
 };
 
 const inWalletArts = async (req, res, next) => {
-  let {walletAddress} = req.params;
-  if(!walletAddress){
+  let isSubscribed = false;
+  let { walletAddress } = req.params;
+  let { user } = req.query;
+
+  if (!walletAddress) {
     return next({ code: 400, message: "No Wallet Address" });
   }
   try {
     const createdArts = [];
     const collectedArts = [];
+    if (user) {
+      const [subscribe] = await nfts.checkSubscription(walletAddress, user);
+
+      if (subscribe.length > 0) {
+        isSubscribed = true;
+      }
+    }
     const [result] = await nfts.createdArts(walletAddress);
     result.forEach((rowsData) => {
+      var video = false;
+      if (user == rowsData.ownerWallet) {
+        isSubscribed = true;
+      }
+      if (rowsData.nftType === 1 || isSubscribed) {
+        video = rowsData.video;
+      }
       let data = {
+        video: video,
         id: rowsData.nft_id,
         tokenId: rowsData.tokenId,
         title: rowsData.title,
@@ -535,6 +553,7 @@ const inWalletArts = async (req, res, next) => {
         sale: rowsData.sale,
         auction: rowsData.auction,
         fixedprice: rowsData.fixedprice,
+        explicityContent: rowsData.nftType,
         categoryId: rowsData.cat_id,
         categoryName: rowsData.cat_name,
         categoryDescription: rowsData.cat_description,
@@ -553,6 +572,13 @@ const inWalletArts = async (req, res, next) => {
     });
     const [result1] = await nfts.collectedArts(walletAddress);
     result1.forEach((rowsData) => {
+      var video = false;
+      if (user == rowsData.ownerWallet) {
+        isSubscribed = true;
+      }
+      if (rowsData.nftType === 1 || isSubscribed) {
+        video = rowsData.video;
+      }
       let data1 = {
         id: rowsData.nft_id,
         tokenId: rowsData.tokenId,
@@ -561,6 +587,7 @@ const inWalletArts = async (req, res, next) => {
         image: rowsData.image,
         sale: rowsData.sale,
         auction: rowsData.auction,
+        video: video,
         fixedprice: rowsData.fixedprice,
         categoryId: rowsData.cat_id,
         categoryName: rowsData.cat_name,
@@ -692,15 +719,27 @@ const allCreators = async (req, res, next) => {
 };
 
 const getSingleArt = async (req, res, next) => {
+  isSubscribed = false;
   let id = req.params.tokenId;
-  console.log(id);
+  const { user } = req.query;
   try {
     const [result] = await nfts.getSingleArt(id);
     if (result.length > 0) {
-      result.forEach((rowsData) => {
-        var video=null;
-        if(rowsData.nftType === 'public'){
-          video=rowsData.video;
+      result.forEach(async (rowsData) => {
+        if (user == rowsData.ownerWallet) {
+          isSubscribed = true;
+        } else {
+          const [checkSubscription] = await nfts.checkSubscription(
+            rowsData.ownerWallet,
+            user
+          );
+          if (checkSubscription.length > 0) {
+            isSubscribed = true;
+          }
+        }
+        var video = false;
+        if (rowsData.nftType === 1 || isSubscribed) {
+          video = rowsData.video;
         }
         let data = {
           id: rowsData.nft_id,
@@ -723,7 +762,8 @@ const getSingleArt = async (req, res, next) => {
           endTimeInSeconds: rowsData.endTimeInSeconds,
           isFixedPrice: rowsData.fixedprice,
           orderId: rowsData.orderId,
-          fixedprice: rowsData.fixPrice,
+          price: rowsData.fixPrice,
+          subscrption_price: rowsData.subscrption_price,
           categoryId: rowsData.cat_id,
           categoryName: rowsData.cat_name,
           categoryDescription: rowsData.cat_description,
@@ -924,6 +964,7 @@ const fetchAllNfts = async (req, res, next) => {
   }
 };
 const getAllNftsData = async (req, res, next) => {
+  const { user } = req.query;
   let categoryId = req.query.catId;
   let search = req.query.search;
   let pageNo = Number(req.query.pageNo);
@@ -956,47 +997,62 @@ const getAllNftsData = async (req, res, next) => {
     );
 
     if (result.length > 0) {
-      result.forEach((rowsData) => {
-        var video=null;
-        if(rowsData.nftType === 'public'){
-          video=rowsData.video;
-        }
+      await Promise.all(
+        result.map(async (rowsData) => {
+          var video = false;
+          let isSubscribed = false;
+          if (user) {
+            const [subscribe] = await nfts.checkSubscription(
+              rowsData.ownerWallet,
+              user
+            );
 
-        let data = {
-          id: rowsData.nft_id,
-          tokenId: rowsData.tokenId,
-          title: rowsData.title,
-          description: rowsData.description,
-          image: rowsData.image,
-          video:video,
-          sale: rowsData.sale,
-          isAuction: rowsData.auction,
-          auctionId: rowsData.auctionId,
-          reservePrice: rowsData.reservePrice,
-          highestBid: rowsData.highestBid,
-          bidderAddress: rowsData.bidderAddress,
-          bidderUsername: rowsData.bidderUsername,
-          bidderImage: rowsData.bidderImage,
-          endTimeInSeconds: rowsData.endTimeInSeconds,
-          isFixedPrice: rowsData.fixedprice,
-          orderId: rowsData.orderId,
-          fixedprice: rowsData.fixPrice,
-          categoryId: rowsData.cat_id,
-          categoryName: rowsData.cat_name,
-          categoryDescription: rowsData.cat_description,
-          categoryImage: rowsData.cat_img,
-          creatorId: rowsData.creatorID,
-          creatorName: rowsData.username,
-          creatorWallet: rowsData.walletAddress,
-          creatorImg: rowsData.img,
-          ownerId: rowsData.ownerId,
-          ownerName: rowsData.ownerUsername,
-          ownerWallet: rowsData.ownerWallet,
-          ownerImg: rowsData.ownerImg,
-          createdAt: rowsData.created_at,
-        };
-        nftData.push(data);
-      });
+            if (subscribe.length > 0) {
+              isSubscribed = true;
+            }
+          }
+          if (rowsData.nftType === 1 || isSubscribed) {
+            video = rowsData.video;
+          }
+
+          let data = {
+            id: rowsData.nft_id,
+            tokenId: rowsData.tokenId,
+            title: rowsData.title,
+            description: rowsData.description,
+            image: rowsData.image,
+            subscribe: isSubscribed,
+            video: video,
+            sale: rowsData.sale,
+            explicityContent: rowsData.nftType,
+            isAuction: rowsData.auction,
+            auctionId: rowsData.auctionId,
+            reservePrice: rowsData.reservePrice,
+            highestBid: rowsData.highestBid,
+            bidderAddress: rowsData.bidderAddress,
+            bidderUsername: rowsData.bidderUsername,
+            bidderImage: rowsData.bidderImage,
+            endTimeInSeconds: rowsData.endTimeInSeconds,
+            isFixedPrice: rowsData.fixedprice,
+            orderId: rowsData.orderId,
+            fixedprice: rowsData.fixPrice,
+            categoryId: rowsData.cat_id,
+            categoryName: rowsData.cat_name,
+            categoryDescription: rowsData.cat_description,
+            categoryImage: rowsData.cat_img,
+            creatorId: rowsData.creatorID,
+            creatorName: rowsData.username,
+            creatorWallet: rowsData.walletAddress,
+            creatorImg: rowsData.img,
+            ownerId: rowsData.ownerId,
+            ownerName: rowsData.ownerUsername,
+            ownerWallet: rowsData.ownerWallet,
+            ownerImg: rowsData.ownerImg,
+            createdAt: rowsData.created_at,
+          };
+          nftData.push(data);
+        })
+      );
 
       return res.status(201).json({
         totalPages: totalPages,
@@ -1008,6 +1064,93 @@ const getAllNftsData = async (req, res, next) => {
     }
   } catch (error) {
     return next({ code: 401, message: error });
+  }
+};
+const getFeeds = async (req, res, next) => {
+  const { wallet } = req.params;
+
+  let pageNo = Number(req.query.pageNo);
+  let pageCount = 8;
+  let start = 0;
+  let end = pageCount;
+  if (pageNo) {
+    if (pageNo === "1") {
+      start = 0;
+      end = pageCount;
+    } else {
+      end = pageNo * pageCount;
+
+      start = end - pageCount;
+    }
+  } else {
+    pageNo = 1;
+  }
+  try {
+    const nftData = [];
+    // const [nftsCount] = await nfts.fetchAllDataFilterCount(categoryId, search);
+
+    // let totalPages = Math.ceil((nftsCount.length - 1) / pageCount);
+
+    const [subscribers] = await nfts.fetchSubscribers(wallet);
+
+    if (subscribers.length > 0) {
+      await Promise.all(
+        subscribers.map(async (newdata) => {
+          console.log(newdata.subscribe_to, "wallet");
+          const [feeds] = await nfts.fetchFeeds(newdata.subscribe_to);
+
+          await feeds.map((rowsData) => {
+            let data = {
+              id: rowsData.nft_id,
+              tokenId: rowsData.tokenId,
+              title: rowsData.title,
+              description: rowsData.description,
+              image: rowsData.image,
+              video: rowsData.video,
+              sale: rowsData.sale,
+              subscribe: true,
+              explicityContent: rowsData.nftType,
+              isAuction: rowsData.auction,
+              auctionId: rowsData.auctionId,
+              reservePrice: rowsData.reservePrice,
+              highestBid: rowsData.highestBid,
+              bidderAddress: rowsData.bidderAddress,
+              bidderUsername: rowsData.bidderUsername,
+              bidderImage: rowsData.bidderImage,
+              endTimeInSeconds: rowsData.endTimeInSeconds,
+              isFixedPrice: rowsData.fixedprice,
+              orderId: rowsData.orderId,
+              fixedprice: rowsData.fixPrice,
+              categoryId: rowsData.cat_id,
+              categoryName: rowsData.cat_name,
+              categoryDescription: rowsData.cat_description,
+              categoryImage: rowsData.cat_img,
+              creatorId: rowsData.creatorID,
+              creatorName: rowsData.username,
+              creatorWallet: rowsData.walletAddress,
+              creatorImg: rowsData.img,
+              ownerId: rowsData.ownerId,
+              ownerName: rowsData.ownerUsername,
+              ownerWallet: rowsData.ownerWallet,
+              ownerImg: rowsData.ownerImg,
+              createdAt: rowsData.created_at,
+            };
+            nftData.push(data);
+          });
+        })
+      );
+
+      return res.status(201).json({
+        // totalPages: totalPages,
+        // currentPage: pageNo,
+        nftData: nftData,
+      });
+    } else {
+      return next({ code: 404, message: "no data found" });
+    }
+  } catch (error) {
+    console.log(error.message);
+    return next({ code: 401, message: error.message });
   }
 };
 const checkEmail = async (req, res, next) => {
@@ -1141,22 +1284,33 @@ const checkSession = async (req, res, next) => {
   }
 };
 const generateImage = async (req, res, next) => {
-
+  const puppeteer = require("puppeteer");
   let htmlContent = req.body.content;
-
+  const baseUrl = require("./../config/baseUrl");
   if (htmlContent) {
     try {
-      let imageName = Date.now() + ".jpg";
-      nodeHtmlToImage({
-        output: `${process.env.PRODUCTION_BASE_URL+process.env.NFT_IMAGES_PATH}/${imageName}`,
-        html: htmlContent,
-    })
-    .then(() => {
-      res.status(201).json({ image: imageName });
-    })
-    .catch((error) => {
-      res.status(400).json({ error: error.message });
-    });
+      async function htmlToImage(htmlContent, outputPath) {
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        // Set viewport to be large enough to capture the entire HTML content
+        await page.setViewport({ width: 550, height: 450 });
+
+        // Set the HTML content of the page
+        await page.setContent(htmlContent);
+
+        // Capture a screenshot of the rendered HTML content
+        await page.screenshot({ path: outputPath });
+
+        // Close the browser
+        await browser.close();
+      }
+      const imageName = `${Date.now()}.png`;
+      const outputPath = `${baseUrl}public/images/nfts/${imageName}`; // Output file path
+
+      htmlToImage(htmlContent, outputPath)
+        .then(() => res.status(200).json({ image: imageName }))
+        .catch((error) => console.error("Error:", error));
     } catch (err) {
       return next({ code: 401, message: err.message });
     }
@@ -1182,6 +1336,7 @@ module.exports = {
   updateProfilePic: updateProfilePic,
   updateCoverPic: updateCoverPic,
   getAllNftsData: getAllNftsData,
+  getFeeds: getFeeds,
   mintArt: mintArt,
   putOnFixedSale: putOnFixedSale,
   updateSalePrice: updateSalePrice,

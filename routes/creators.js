@@ -3,7 +3,7 @@ const creatorController = require("../controller/creators");
 const profileUpload = require("../config/profileUpload");
 const coverUpload = require("../config/coverUpload");
 const formdata = require("./../config/acceptFormData");
-const upload=require("./../config/fileUpload");
+const upload = require("./../config/fileUpload");
 const router = express.Router();
 
 router.get("/checkSession", creatorController.checkSession);
@@ -21,6 +21,7 @@ router.get("/getCategoryArts/:id", creatorController.fetchAllNftsWithCatId);
 router.get("/singleArt/:tokenId", creatorController.getSingleArt);
 router.get("/getArts", creatorController.fetchAllNfts);
 router.get("/getNfts", creatorController.getAllNftsData);
+router.get("/getFeeds/:wallet", creatorController.getFeeds);
 
 //creator routes
 
@@ -40,21 +41,29 @@ router.post("/login", formdata.none(), creatorController.userLogin);
 router.get("/allCreators", creatorController.allCreators);
 router.get("/singleCreator/:walletAddress", creatorController.singleCreator);
 router.get("/inWallet/:walletAddress", creatorController.inWalletArts);
-router.post("/updateInfo", creatorController.updateCreatorInfo);
+router.post(
+  "/updateInfo",
+  formdata.none(),
+  creatorController.updateCreatorInfo
+);
 
 //mint route
-router.post("/mintArt",upload, creatorController.mintArt);
+router.post("/mintArt", creatorController.mintArt);
 
 //list routes
 //list on Fiexed price
 
-router.post("/putOnFixedPrice",formdata.none(), creatorController.putOnFixedSale);
+router.post(
+  "/putOnFixedPrice",
+  formdata.none(),
+  creatorController.putOnFixedSale
+);
 router.post("/updateSalePrice", creatorController.updateSalePrice);
 router.post("/cancelFixedSale", creatorController.cancelFixedPriceSale);
 router.post("/directTransfer", creatorController.directTransfer);
 
 //listed on Auction
-router.post("/listOnAuction",formdata.none(), creatorController.listOnAuction);
+router.post("/listOnAuction", formdata.none(), creatorController.listOnAuction);
 router.post("/addBidding", creatorController.addBidding);
 router.post("/auctionTransfer", creatorController.auctionTransfer);
 

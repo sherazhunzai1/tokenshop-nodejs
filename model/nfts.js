@@ -33,6 +33,44 @@ module.exports = class Nfts {
     
      `);
   }
+
+  fetchSubscribers(subscriber) {
+    return db.execute(
+      `SELECT  * from subscrptions where subscriber='${subscriber}' AND end_date > CURRENT_TIMESTAMP `
+    );
+  }
+  fetchFeeds(wallet) {
+    return db.execute(
+      `SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
+      FROM  nfts n
+      LEFT JOIN categories c
+        ON
+      (n.categoryId = c.cat_id)
+      LEFT JOIN fixedprice fp
+      ON
+      (n.tokenId = fp.tokenId
+        AND
+      fp.status = 1)
+      LEFT JOIN auctions ac
+      ON
+      (n.tokenId = ac.tokenId
+        AND
+        ac.status = 1)
+        LEFT JOIN creators bd 
+        ON
+        (bd.walletAddress = ac.highestBidder)
+      JOIN creators cr 
+        ON
+      (cr.walletAddress = n.creatorWallet)
+      JOIN creators ow 
+        ON
+      (ow.walletAddress = n.ownerWallet)
+     WHERE
+      ow.walletAddress ='${wallet}'
+      ORDER BY n.created_at DESC
+       `
+    );
+  }
   fetchAllNftsCount() {
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
@@ -125,7 +163,7 @@ module.exports = class Nfts {
      `);
   }
   getSingleArt(tokenId) {
-    return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
+    return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,ow.subscrption_price,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
     LEFT JOIN categories c
       ON
@@ -150,7 +188,7 @@ module.exports = class Nfts {
       ON
     (ow.walletAddress = n.ownerWallet)
     WHERE
-    n.tokenId  = ${tokenId}
+    n.nft_id   = ${tokenId}
     
      `);
   }
@@ -170,6 +208,11 @@ module.exports = class Nfts {
     n.creatorWallet = '${walletAddress}'
     
      `);
+  }
+  checkSubscription(subscribeTo, subscriber) {
+    return db.execute(
+      `SELECT  * from subscrptions where subscriber='${subscriber}' AND subscribe_to='${subscribeTo}' AND end_date > CURRENT_TIMESTAMP`
+    );
   }
   collectedArts(walletAddress) {
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg FROM  nfts n, categories c, creators cr, creators ow 
@@ -274,16 +317,18 @@ module.exports = class Nfts {
     metadata,
     transactionHash,
     categoryId,
-    socialMediaImage,
+    socialImage,
     artistImage,
     titleImage,
-    nftType
-
-  },video) {
-    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${ownerWallet}',sale = '${metadata}', transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialMediaImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType='${nftType}'
+    nftType,
+    explicityContent,
+    royalityPercentage,
+    video,
+  }) {
+    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${creatorWallet}',sale = 1, transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType=${explicityContent},royalityPercentage=${royalityPercentage}
 `);
   }
-  putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) { 
+  putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
     return db.execute(`INSERT INTO fixedprice SET orderId = '${orderId}', tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner = '${ownerWallet}', price = '${price}'
 `);
   }
@@ -353,9 +398,9 @@ module.exports = class Nfts {
     reservePrice,
   }) {
     const currentDate = new Date();
-const unixTimestamp = currentDate.getTime();
-const endTime=(24*60*60);
-const unixTimestampInSeconds = Math.floor((unixTimestamp / 1000)+endTime);
+    const unixTimestamp = currentDate.getTime();
+    const endTime = 24 * 60 * 60;
+    const unixTimestampInSeconds = Math.floor(unixTimestamp / 1000 + endTime);
     return db.execute(`INSERT INTO auctions SET auctionId = ${auctionId}, tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner_address = '${ownerWallet}', reservePrice = '${reservePrice}',endTimeInSeconds=${unixTimestampInSeconds}
 `);
   }
