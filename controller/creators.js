@@ -529,7 +529,7 @@ const inWalletArts = async (req, res, next) => {
     const collectedArts = [];
     if (user) {
       const [subscribe] = await nfts.checkSubscription(walletAddress, user);
-
+      console.log(subscribe, "subscribe");
       if (subscribe.length > 0) {
         isSubscribed = true;
       }
@@ -587,6 +587,7 @@ const inWalletArts = async (req, res, next) => {
         image: rowsData.image,
         sale: rowsData.sale,
         auction: rowsData.auction,
+        explicityContent: rowsData.nftType,
         video: video,
         fixedprice: rowsData.fixedprice,
         categoryId: rowsData.cat_id,
@@ -605,6 +606,7 @@ const inWalletArts = async (req, res, next) => {
       };
       collectedArts.push(data1);
     });
+
     return res.status(201).json({
       createdArts: createdArts,
       collectedArts: collectedArts,
@@ -644,11 +646,55 @@ const updateCreatorInfo = async (req, res, next) => {
   }
 };
 
+const subscribe = async (req, res, next) => {
+  /**
+   * @dev the payload will contain following properties:
+   * - `walletAddress  `,
+   * - `firstName`,
+   * - `lastName`,
+   * - `email`,
+   * - `bio`,
+   * - `portfolio`,
+   * - `twitter`,
+   * - `instagram`,
+
+   */
+  let payload = req.body;
+  const { subscriber, subscribe_to, price } = req.body;
+
+  if (!subscriber || !subscribe_to || !price)
+    return next({ code: 400, message: "BAD Request" });
+
+  try {
+    const result = await creators.addSubscription(
+      subscriber,
+      subscribe_to,
+      price
+    );
+    if (result) {
+      return res.status(201).json({ message: "Subscribe Successfully" });
+    } else {
+      return next({ code: 404, message: "no data found" });
+    }
+  } catch (error) {
+    return next({ code: 401, message: error });
+  }
+};
 const singleCreator = async (req, res, next) => {
   let wallet = req.params.walletAddress;
+  const { user } = req.query;
+  let isSubscribed = false;
   try {
+    if (user) {
+      const [subscribe] = await nfts.checkSubscription(wallet, user);
+
+      if (subscribe.length > 0) {
+        isSubscribed = true;
+      }
+    }
     const [result] = await creators.fetchSingle(wallet);
     if (result.length > 0) {
+      result[0].isSubscribed = isSubscribed;
       return res.status(201).json(result[0]);
     } else {
       return next({ code: 404, message: "no data found" });
@@ -657,7 +703,20 @@ const singleCreator = async (req, res, next) => {
     return next({ code: 401, message: error });
   }
 };
+const editPrice = async (req, res, next) => {
+  const { price, wallet } = req.body;
 
+  if (!price || !wallet) {
+    return res.status(400).json("bad request");
+  }
+  try {
+    const [result] = await creators.editPrice(wallet, price);
+
+    return res.status(200).json("price edited successfully");
+  } catch (error) {
+    return next({ code: 401, message: error });
+  }
+};
 const allCreators = async (req, res, next) => {
   let pageNo = Number(req.query.pageNo);
   let pageCount = 8;
@@ -1320,6 +1379,8 @@ const generateImage = async (req, res, next) => {
 };
 
 module.exports = {
+  editPrice: editPrice,
+  subscribe: subscribe,
   userLogin: logIn,
   signUp: signUp,
   checkEmail: checkEmail,

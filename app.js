@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const path = require("path");
 const app = express();
 const creators = require("./routes/creators");
 const morgan = require("morgan");
@@ -11,7 +12,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(morgan("dev"));
-
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: false }));
 // app.use(express.static("assests/signatures"));
 app.use((req, res, next) => {

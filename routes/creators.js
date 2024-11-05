@@ -35,9 +35,9 @@ router.post(
   coverUpload,
   creatorController.updateCoverPic
 );
-
+router.post("/editPrice", formdata.none(), creatorController.editPrice);
 router.post("/login", formdata.none(), creatorController.userLogin);
-
+router.post("/subscribe", formdata.none(), creatorController.subscribe);
 router.get("/allCreators", creatorController.allCreators);
 router.get("/singleCreator/:walletAddress", creatorController.singleCreator);
 router.get("/inWallet/:walletAddress", creatorController.inWalletArts);

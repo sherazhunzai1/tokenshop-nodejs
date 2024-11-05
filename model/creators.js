@@ -36,6 +36,23 @@ module.exports = class Creators {
     email = '${email}'
      `);
   }
+  addSubscription(subscriber, subscribe_to, price) {
+    return db.execute(
+      `INSERT INTO subscrptions SET  subscriber = ?,subscribe_to=?,price=?,end_date=DATE_ADD(NOW(), INTERVAL 30 DAY)
+`,
+      [subscriber, subscribe_to, price]
+    );
+  }
+
+  editPrice(wallet, price) {
+    return db.execute(
+      `UPDATE creators SET subscrption_price = ? 
+WHERE
+walletAddress = ?
+`,
+      [price, wallet]
+    );
+  }
 
   /**
    * @dev the function will create new record for given `payload`
@@ -54,13 +71,7 @@ module.exports = class Creators {
    *
    * @returns it will rertun a Promise <fulfiled | rejected>
    */
-  updateInfo({
-    walletAddress,
-    firstName,
-    lastName,
-    email,
-    username
-  }) {
+  updateInfo({ walletAddress, firstName, lastName, email, username }) {
     return db.execute(`UPDATE creators SET firstName = '${firstName}', lastName = '${lastName}' , email = '${email}',username='${username}' 
 WHERE
 walletAddress = '${walletAddress}'
