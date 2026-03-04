@@ -34,7 +34,7 @@ app.get(SERVER_URL, (req, res) => {
 
 // Global error handler
 app.use((error, req, res, next) => {
-  const statusCode = error.code || 401;
+  const statusCode = typeof error.code === 'number' ? error.code : 500;
   const message = error.message || 'Something went wrong';
   return res.status(statusCode).json({ message });
 });

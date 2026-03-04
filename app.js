@@ -32,7 +32,8 @@ app.get(serverUrl, (req, res) => {
 });
 
 app.use((error, req, res, next) => {
-  return res.status(error.code || 401).json({ message: error.message });
+  const statusCode = typeof error.code === 'number' ? error.code : 500;
+  return res.status(statusCode).json({ message: error.message });
 });
 app.all("*", function (req, res) {
   res.status(404).json({ message: "Path Not Found" });
