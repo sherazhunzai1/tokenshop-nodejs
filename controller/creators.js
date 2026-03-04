@@ -1345,35 +1345,25 @@ const generateImage = async (req, res, next) => {
   const puppeteer = require("puppeteer");
   let htmlContent = req.body.content;
   const baseUrl = require("./../config/baseUrl");
-  if (htmlContent) {
-    try {
-      async function htmlToImage(htmlContent, outputPath) {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-
-        // Set viewport to be large enough to capture the entire HTML content
-        await page.setViewport({ width: 550, height: 450 });
-
-        // Set the HTML content of the page
-        await page.setContent(htmlContent);
-
-        // Capture a screenshot of the rendered HTML content
-        await page.screenshot({ path: outputPath });
-
-        // Close the browser
-        await browser.close();
-      }
-      const imageName = `${Date.now()}.png`;
-      const outputPath = `${baseUrl}public/images/nfts/${imageName}`; // Output file path
-
-      htmlToImage(htmlContent, outputPath)
-        .then(() => res.status(200).json({ image: imageName }))
-        .catch((error) => console.error("Error:", error));
-    } catch (err) {
-      return next({ code: 401, message: err.message });
-    }
-  } else {
+  if (!htmlContent) {
     return next({ code: 400, message: "No Request Found" });
+  }
+  try {
+    const imageName = `${Date.now()}.png`;
+    const outputPath = `${baseUrl}public/images/nfts/${imageName}`;
+
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 550, height: 450 });
+    await page.setContent(htmlContent);
+    await page.screenshot({ path: outputPath });
+    await browser.close();
+
+    return res.status(200).json({ image: imageName });
+  } catch (err) {
+    return next({ code: 500, message: err.message });
   }
 };
 
