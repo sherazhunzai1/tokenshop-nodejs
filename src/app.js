@@ -49,6 +49,12 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     console.log('Database connected successfully.');
+
+    // Sync models with DB (use { alter: true } to update existing tables)
+    // Remove or set to false in production — use migrations instead
+    await sequelize.sync({ alter: true });
+    console.log('Database synced.');
+
     app.listen(PORT, () => console.log(`server is running at http://localhost:${PORT}`));
   } catch (error) {
     console.error('Unable to connect to the database:', error);
