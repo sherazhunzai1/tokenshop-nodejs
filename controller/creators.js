@@ -1303,7 +1303,7 @@ const logIn = async (req, res, next) => {
     wallet,
   });
   if (error) {
-    res.status(401).json("invalid wallet");
+    return res.status(401).json("invalid wallet");
   }
   try {
     const [data] = await creators.checkWallet(wallet);
