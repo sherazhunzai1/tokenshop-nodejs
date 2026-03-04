@@ -1293,14 +1293,14 @@ const signUp = async (req, res, next) => {
 };
 
 const logIn = async (req, res, next) => {
-  let wallet = req.body.wallet;
+  let wallet = req.body.walletAddress;
   const reqBodySchema = Joi.object({
-    wallet: Joi.string()
+    walletAddress: Joi.string()
       .required()
       .pattern(/^0x[a-fA-F0-9]{40}$/),
   }).options({ abortEarly: false, allowUnknown: false });
   const { error } = reqBodySchema.validate({
-    wallet,
+    walletAddress: wallet,
   });
   if (error) {
     return res.status(401).json("invalid wallet");
