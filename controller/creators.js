@@ -1125,7 +1125,7 @@ const getAllNftsData = async (req, res, next) => {
   }
 };
 const getFeeds = async (req, res, next) => {
-  const { wallet } = req.params;
+  const wallet = req.query.walletAddress;
 
   let pageNo = Number(req.query.pageNo);
   let pageCount = 8;
