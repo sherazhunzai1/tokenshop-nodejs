@@ -313,20 +313,36 @@ module.exports = class Nfts {
     description,
     image,
     creatorWallet,
-    ownerWallet,
-    metadata,
     transactionHash,
     categoryId,
     socialImage,
     artistImage,
     titleImage,
-    nftType,
     explicityContent,
     royalityPercentage,
     video,
+    metadataUri,
   }) {
-    return db.execute(`INSERT INTO nfts SET tokenId = ${tokenId}, title = '${title}', description = '${description}', image = '${image}', creatorWallet = '${creatorWallet}', ownerWallet = '${creatorWallet}',sale = 1, transactionHash = '${transactionHash}',categoryId = ${categoryId},video='${video}',socialMediaImage='${socialImage}',artistImage='${artistImage}',titleImage='${titleImage}',nftType=${explicityContent},royalityPercentage=${royalityPercentage}
-`);
+    return db.execute(
+      `INSERT INTO nfts SET tokenId = ?, title = ?, description = ?, image = ?, creatorWallet = ?, ownerWallet = ?, sale = 1, transactionHash = ?, categoryId = ?, video = ?, socialMediaImage = ?, artistImage = ?, titleImage = ?, nftType = ?, royalityPercentage = ?, metadata = ?`,
+      [
+        tokenId || null,
+        title || null,
+        description || null,
+        image || null,
+        creatorWallet || null,
+        creatorWallet || null,
+        transactionHash || null,
+        categoryId || null,
+        video || null,
+        socialImage || null,
+        artistImage || null,
+        titleImage || null,
+        explicityContent || 0,
+        royalityPercentage || null,
+        metadataUri || null,
+      ]
+    );
   }
   putOnFixedSale({ orderId, tokenId, transactionHash, ownerWallet, price }) {
     return db.execute(`INSERT INTO fixedprice SET orderId = '${orderId}', tokenId = ${tokenId}, transactionHash = '${transactionHash}', owner = '${ownerWallet}', price = '${price}'

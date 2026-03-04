@@ -241,25 +241,26 @@ const mintArt = asyncHandler(async (req, res, next) => {
     return next({ code: 400, message: 'No Request Found' });
   }
 
-  await Nft.create({
-    tokenId: payload.tokenId,
+  const nft = await Nft.create({
+    tokenId: payload.tokenId || null,
     title: payload.title,
     description: payload.description,
     image: payload.image,
     creatorWallet: payload.creatorWallet,
     ownerWallet: payload.creatorWallet,
     sale: 1,
-    transactionHash: payload.transactionHash,
+    transactionHash: payload.transactionHash || null,
     categoryId: payload.categoryId,
-    video: payload.video,
-    socialMediaImage: payload.socialImage,
-    artistImage: payload.artistImage,
-    titleImage: payload.titleImage,
-    nftType: payload.explicityContent,
-    royalityPercentage: payload.royalityPercentage,
+    video: payload.video || null,
+    metadata: payload.metadataUri || null,
+    socialMediaImage: payload.socialImage || null,
+    artistImage: payload.artistImage || null,
+    titleImage: payload.titleImage || null,
+    nftType: payload.explicityContent || 0,
+    royalityPercentage: payload.royalityPercentage || null,
   });
 
-  return res.status(201).json({ message: ' Minted Successfully', tokenId: payload.tokenId });
+  return res.status(201).json({ message: ' Minted Successfully', tokenId: nft.tokenId });
 });
 
 module.exports = {
