@@ -77,7 +77,7 @@ router.get(
   "/offersReceivedByUser/:walletAddress",
   creatorController.offersReceivedByUser
 );
-router.post("/generateImage", formdata.none(), creatorController.generateImage);
+router.post("/generateImage", formdata.single("image"), creatorController.generateImage);
 
 // router.post("/passwordGenrator", async (req, res, next) => {
 //   let password = req.body.password;

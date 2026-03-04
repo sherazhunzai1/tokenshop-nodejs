@@ -107,6 +107,32 @@ const videoUpload = (req, res, next) => {
   });
 };
 
+// Image upload for generateImage (stores in memory for base64 conversion)
+const imageUpload = (req, res, next) => {
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: (req, file, cb) => {
+      const allowed = ['image/png', 'image/jpg', 'image/jpeg'];
+      if (allowed.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image formats allowed!'));
+      }
+    },
+    limits: { fileSize: 10 * 1024 * 1024 },
+  }).single('image');
+
+  upload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ error: { message: `Upload error: ${err.message}` } });
+    }
+    if (err) {
+      return res.status(400).json({ error: { message: err.message } });
+    }
+    next();
+  });
+};
+
 // Form data parser (no files)
 const formData = multer({ storage: multer.memoryStorage() });
 
@@ -114,5 +140,6 @@ module.exports = {
   profileUpload,
   coverUpload,
   videoUpload,
+  imageUpload,
   formData,
 };

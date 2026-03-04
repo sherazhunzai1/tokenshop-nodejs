@@ -4,7 +4,7 @@ const creatorCtrl = require('../controllers/creatorController');
 const nftCtrl = require('../controllers/nftController');
 const marketCtrl = require('../controllers/marketplaceController');
 const imageCtrl = require('../controllers/imageController');
-const { profileUpload, coverUpload, formData } = require('../middleware/upload');
+const { profileUpload, coverUpload, imageUpload, formData } = require('../middleware/upload');
 
 // ──────────────────── Session & Auth ────────────────────
 router.get('/checkSession', creatorCtrl.checkSession);
@@ -56,6 +56,6 @@ router.get('/offersMadeByUser/:walletAddress', marketCtrl.offersMadeByUser);
 router.get('/offersReceivedByUser/:walletAddress', marketCtrl.offersReceivedByUser);
 
 // ──────────────────── Image Generation ────────────────────
-router.post('/generateImage', formData.none(), imageCtrl.generateImage);
+router.post('/generateImage', imageUpload, imageCtrl.generateImage);
 
 module.exports = router;

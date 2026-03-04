@@ -1343,11 +1343,50 @@ const checkSession = async (req, res, next) => {
 };
 const generateImage = async (req, res, next) => {
   const puppeteer = require("puppeteer");
-  let htmlContent = req.body.content;
   const baseUrl = require("./../config/baseUrl");
-  if (!htmlContent) {
-    return next({ code: 400, message: "No Request Found" });
+
+  if (!req.file) {
+    return next({ code: 400, message: "Background image is required" });
   }
+
+  const { name, artist, type, facebook, instagram, twitter, createdDate } = req.body;
+  const imageType = type || "nft";
+
+  // Convert uploaded image buffer to base64 data URI
+  const base64 = req.file.buffer.toString("base64");
+  const bgDataUri = `data:${req.file.mimetype};base64,${base64}`;
+
+  let htmlContent;
+  if (imageType === "social") {
+    const links = [];
+    if (facebook) links.push(`<div style="margin:6px 0;">Facebook: ${facebook}</div>`);
+    if (instagram) links.push(`<div style="margin:6px 0;">Instagram: ${instagram}</div>`);
+    if (twitter) links.push(`<div style="margin:6px 0;">Twitter: ${twitter}</div>`);
+    htmlContent = `<html><body style="margin:0;padding:0;width:550px;height:450px;position:relative;overflow:hidden;">
+      <img src="${bgDataUri}" style="width:100%;height:100%;object-fit:cover;" />
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;
+        background:linear-gradient(transparent, rgba(0,0,0,0.8));color:#fff;font-family:Arial,sans-serif;">
+        <div style="font-size:20px;font-weight:bold;margin-bottom:10px;">${name || ""}</div>
+        <div style="font-size:14px;">${links.join("")}</div>
+      </div></body></html>`;
+  } else if (imageType === "creator") {
+    htmlContent = `<html><body style="margin:0;padding:0;width:550px;height:450px;position:relative;overflow:hidden;">
+      <img src="${bgDataUri}" style="width:100%;height:100%;object-fit:cover;" />
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;
+        background:linear-gradient(transparent, rgba(0,0,0,0.8));color:#fff;font-family:Arial,sans-serif;">
+        <div style="font-size:16px;opacity:0.8;">Created by</div>
+        <div style="font-size:20px;font-weight:bold;margin-top:6px;word-break:break-all;">${artist || name || ""}</div>
+      </div></body></html>`;
+  } else {
+    htmlContent = `<html><body style="margin:0;padding:0;width:550px;height:450px;position:relative;overflow:hidden;">
+      <img src="${bgDataUri}" style="width:100%;height:100%;object-fit:cover;" />
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:20px;
+        background:linear-gradient(transparent, rgba(0,0,0,0.8));color:#fff;font-family:Arial,sans-serif;">
+        <div style="font-size:24px;font-weight:bold;margin-bottom:8px;">${name || ""}</div>
+        <div style="font-size:14px;opacity:0.8;">Created: ${createdDate || new Date().toLocaleDateString()}</div>
+      </div></body></html>`;
+  }
+
   try {
     const imageName = `${Date.now()}.png`;
     const outputPath = `${baseUrl}public/images/nfts/${imageName}`;
@@ -1357,7 +1396,7 @@ const generateImage = async (req, res, next) => {
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 550, height: 450 });
-    await page.setContent(htmlContent);
+    await page.setContent(htmlContent, { waitUntil: "load" });
     await page.screenshot({ path: outputPath });
     await browser.close();
 
