@@ -1343,7 +1343,6 @@ const checkSession = async (req, res, next) => {
 };
 const generateImage = async (req, res, next) => {
   const puppeteer = require("puppeteer");
-  const baseUrl = require("./../config/baseUrl");
 
   if (!req.file) {
     return next({ code: 400, message: "Background image is required" });
@@ -1388,19 +1387,17 @@ const generateImage = async (req, res, next) => {
   }
 
   try {
-    const imageName = `${Date.now()}.png`;
-    const outputPath = `${baseUrl}public/images/nfts/${imageName}`;
-
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 550, height: 450 });
     await page.setContent(htmlContent, { waitUntil: "load" });
-    await page.screenshot({ path: outputPath });
+    const imageBuffer = await page.screenshot({ type: "png" });
     await browser.close();
 
-    return res.status(200).json({ image: imageName });
+    res.set("Content-Type", "image/png");
+    return res.status(200).send(imageBuffer);
   } catch (err) {
     return next({ code: 500, message: err.message });
   }

@@ -1,5 +1,4 @@
 const asyncHandler = require('../utils/asyncHandler');
-const path = require('path');
 
 // Build HTML for NFT detail image (title + created date)
 function buildNftDetailHtml(bgDataUri, name, createdDate) {
@@ -73,18 +72,16 @@ const generateImage = asyncHandler(async (req, res, next) => {
   }
 
   const puppeteer = require('puppeteer');
-  const baseUrl = process.env.DEVELOPMENT_BASE_URL || './';
-  const imageName = `${Date.now()}.png`;
-  const outputPath = path.join(baseUrl, 'public/images/nfts', imageName);
 
   const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   const page = await browser.newPage();
   await page.setViewport({ width: 550, height: 450 });
   await page.setContent(htmlContent, { waitUntil: 'load' });
-  await page.screenshot({ path: outputPath });
+  const imageBuffer = await page.screenshot({ type: 'png' });
   await browser.close();
 
-  return res.status(200).json({ image: imageName });
+  res.set('Content-Type', 'image/png');
+  return res.status(200).send(imageBuffer);
 });
 
 module.exports = { generateImage };
