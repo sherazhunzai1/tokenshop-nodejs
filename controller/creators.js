@@ -432,19 +432,18 @@ const mintArt = async (req, res, next) => {
      * @dev the payload will contain following properties:
     
     
-   * -  tokenId,
-   * -  title,
-   * -  description,
-   * -  image,
-   * -  creatorWallet,
-   * -  ownerWallet,
-   * -  metadata,
-   * -  transactionHash,
-   * -  categoryId,
-   * -  video,
-   * -  socialMediaImage,
-   * -  artistImage,
-   * -  titleImage,
+     * - video,
+     * - image,
+     * - name,
+     * - categoryId,
+     * - description,
+     * - facebook,
+     *  -instagram,
+     * - twitter,
+     * - price ,
+     * - creatorWallet,
+     * - public,
+     * - listingType: { fixed: false, auction: false },
       
      
  
@@ -458,7 +457,7 @@ const mintArt = async (req, res, next) => {
         return res
           .status(201)
           .json({ message: " Minted Successfully", tokenId: payload.tokenId });
-      } else {
+
         return next({ code: 404, message: "no request found" });
       }
     } catch (error) {

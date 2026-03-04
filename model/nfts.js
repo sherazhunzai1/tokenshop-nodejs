@@ -1,4 +1,4 @@
-const db = require("../config/database");
+const db = require('../config/database');
 
 module.exports = class Nfts {
   constructor() {}
@@ -233,8 +233,8 @@ module.exports = class Nfts {
     // if (categoryId) {
     //   catFilter = `WHERE c.cat_id = ${categoryId}`;
     // }
-    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : "";
-    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : "";
+    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : '';
+    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : '';
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
     LEFT JOIN categories c
@@ -273,8 +273,8 @@ module.exports = class Nfts {
     // if (categoryId) {
     //   catFilter = `WHERE c.cat_id = ${categoryId}`;
     // }
-    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : "";
-    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : "";
+    let catFilter = categoryId ? `AND c.cat_id = ${categoryId}` : '';
+    let searchFilter = search ? `AND n.title LIKE '%${search}%' ` : '';
 
     return db.execute(`SELECT  n.*, c.*, cr.creatorID, cr.walletAddress,cr.username,cr.img, ow.creatorID as ownerId, ow.username as ownerUsername, ow.walletAddress as ownerWallet, ow.img as ownerImg,fp.orderId,fp.tokenId as fixedToken,fp.transactionHash as fixedHash,fp.price as fixPrice,fp.status as fixedStatus,ac.auctionId,ac.tokenId as aucTokenId,ac.reservePrice,ac.highestBid,ac.endTimeInSeconds,ac.highestBidder,ac.status as aucStatus, bd.walletAddress as bidderAddress,bd.username as bidderUsername,bd.img as bidderImage
     FROM  nfts n
