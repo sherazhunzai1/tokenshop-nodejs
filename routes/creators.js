@@ -18,7 +18,7 @@ router.get("/getCategories", creatorController.getAllCategories);
 router.get("/getCategoryArts/:id", creatorController.fetchAllNftsWithCatId);
 
 // art routes
-router.get("/singleArt/:tokenId", creatorController.getSingleArt);
+router.get("/singleArt", creatorController.getSingleArt);
 router.get("/getArts", creatorController.fetchAllNfts);
 router.get("/getNfts", creatorController.getAllNftsData);
 router.get("/getFeeds", creatorController.getFeeds);

@@ -778,7 +778,7 @@ const allCreators = async (req, res, next) => {
 
 const getSingleArt = async (req, res, next) => {
   isSubscribed = false;
-  let id = req.params.tokenId;
+  let id = req.query.id;
   const { user } = req.query;
   try {
     const [result] = await nfts.getSingleArt(id);

@@ -117,7 +117,7 @@ const fetchAllNftsWithCatId = asyncHandler(async (req, res, next) => {
 });
 
 const getSingleArt = asyncHandler(async (req, res, next) => {
-  const tokenId = req.params.tokenId;
+  const tokenId = req.query.id;
   const { user } = req.query;
 
   const nft = await Nft.findOne({

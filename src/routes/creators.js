@@ -21,7 +21,7 @@ router.get('/getCategories', nftCtrl.getAllCategories);
 router.get('/getCategoryArts/:id', nftCtrl.fetchAllNftsWithCatId);
 
 // ──────────────────── NFTs ────────────────────
-router.get('/singleArt/:tokenId', nftCtrl.getSingleArt);
+router.get('/singleArt', nftCtrl.getSingleArt);
 router.get('/getArts', nftCtrl.fetchAllNfts);
 router.get('/getNfts', nftCtrl.getAllNftsData);
 router.get('/getFeeds/:wallet', nftCtrl.getFeeds);
